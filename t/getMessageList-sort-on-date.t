@@ -57,7 +57,7 @@ $server->simple_test(sub {
     my $res = $tester->request([
       [
         getMessageList => {
-          filter => { inMailboxes => [ $x->id ] },
+          filter => { inMailbox   => $x->id },
           sort                    => [ 'date desc' ],
           limit                   => 1,
           fetchMessages           => \1,
