@@ -36,6 +36,9 @@ test "Mailbox/set create with defaults omitted" => sub {
   ok($res->is_success, "Mailbox/set create")
     or diag explain $res->http_response->as_string;
 
+  diag explain $res->as_stripped_triples;
+
+  # XXX - Wrong. Require this
   # Not checking oldState here as server may not have one
   jcmp_deeply(
     $res->single_sentence("Mailbox/set")->arguments,
