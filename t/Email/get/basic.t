@@ -13,6 +13,7 @@ use Test::More;
 use JSON qw(decode_json);
 use JSON::Typist;
 use Test::Abortable;
+use Encode;
 
 use utf8;
 
@@ -1097,6 +1098,11 @@ test "header:{header-field-name}" => sub {
         # LATIN CAPITAL LETTER A WITH RING ABOVE
         'X-NFC'   => "\N{ANGSTROM SIGN}",
       ],
+
+      # RFC 6532 headers
+      raw_headers => [
+        'X-6532' => Encode::encode('UTF-8', "☃"),
+      ],
     });
 
     my $res = $tester->request({
@@ -1110,11 +1116,13 @@ test "header:{header-field-name}" => sub {
             header:list-id:asRaw
             header:x-foo:asRaw
             header:x-nfc:asRaw
+            header:x-6532:asRaw
             header:subject:asText
             header:comment:asText
             header:list-id:asText
             header:x-foo:asText
             header:x-nfc:asText
+            header:x-6532:asText
           )],
         },
       ]],
@@ -1134,11 +1142,13 @@ test "header:{header-field-name}" => sub {
           'header:list-id:asRaw'  => " =?UTF-8?B?4piD4piD4piD?=",
           'header:x-foo:asRaw'    => " =?UTF-8?B?4piD4piD4piD4piD?=",
           'header:x-nfc:asRaw'    => " =?UTF-8?B?4oSr?=",
+          'header:x-6532:asRaw'   => " ☃",
           'header:subject:asText' => "☃",
           'header:comment:asText' => "☃☃",
           'header:list-id:asText' => "☃☃☃",
           'header:x-foo:asText'   => "☃☃☃☃",
           'header:x-nfc:asText'   => "\N{LATIN CAPITAL LETTER A WITH RING ABOVE}",
+          'header:x-6532:asText'  => "☃",
         }],
       }),
       "Response looks good",
