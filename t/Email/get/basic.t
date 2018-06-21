@@ -13,6 +13,7 @@ use Test::More;
 use JSON qw(decode_json);
 use JSON::Typist;
 use Test::Abortable;
+use Path::Tiny;
 
 use utf8;
 
@@ -1489,6 +1490,34 @@ test "header:{header-field-name}" => sub {
       "Response looks good",
     ) or diag explain $res->as_stripped_triples;
   };
+};
+
+pristine_test "textBody" => sub {
+  my ($self) = @_;
+
+  my $tester = $self->tester;
+
+  my $mbox = $self->context->create_mailbox;
+
+  my $message = $mbox->add_message({
+    email_type => 'provided',
+    email      => path("t/corpus/emails/structured.eml")->slurp,
+  });
+
+  my $res = $tester->request({
+    using => [ "ietf:jmapmail" ],
+    methodCalls => [[
+      "Email/get" => {
+        ids        => [ $message->id ],
+        properties => [ 'textBody', 'bodyValues', 'bodyStructure' ],
+        fetchAllBodyValues => jtrue(),
+      },
+    ]],
+  });
+  ok($res->is_success, "Email/get")
+    or diag explain $res->http_response->as_string;
+
+  diag explain $res->as_stripped_triples;
 };
 
 run_me;
