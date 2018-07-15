@@ -112,13 +112,21 @@ package JMAP::TestSuite::AccountContext {
     },
   );
 
-  sub email_blob {
+  sub email {
     my ($self, $which, $arg) = @_;
 
     Carp::confess("don't know how to generate test message named $which")
       unless my $gen = $types{$which};
 
     my $email = $gen->($self, $arg);
+
+    return $email;
+  }
+
+  sub email_blob {
+    my ($self, $which, $arg) = @_;
+
+    my $email = $self->email($which, $arg);
 
     return $self->tester->upload('message/rfc822',
       blessed($email) ? \$email->as_string : \$email,
