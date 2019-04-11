@@ -25,6 +25,11 @@ sub calendar {
     mayRemoveItems  => jbool,
     mayRename       => jbool,
     mayDelete       => jbool,
+
+    'x-href'        => jstr,
+    'mayAdmin'      => jbool,
+    'isSubscribed'  => jbool,
+    'shareWith'     => ignore,
   );
 
   my %optional;
