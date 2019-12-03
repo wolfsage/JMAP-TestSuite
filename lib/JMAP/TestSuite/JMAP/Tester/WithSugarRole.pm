@@ -16,7 +16,7 @@ sub BUILD {
 
   unless ($self->_has_default_using) {
     $self->default_using(
-      [ "urn:ietf:params:jmap:core", "urn:ietf:params:jmap:mail"],
+      [ "urn:ietf:params:jmap:core", "urn:ietf:params:jmap:mail", "urn:ietf:params:jmap:submission"],
     );
   }
 }

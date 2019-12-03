@@ -12,15 +12,18 @@ test {
   my $mbox = $account->create_mailbox;
 
   subtest "image/audio/video in text only, attached" => sub {
-    my $email = cmultipart("alternative", [
-      cmultipart("mixed", [
-        cpart("text/plain", "a"),
-        cpart("image/jpeg", "b"),
-        cpart("audio/mp3",  "c"),
-        cpart("video/avi",  "d"),
-      ]),
-      cpart("text/html", "e"),
-    ]);
+    my $email =
+      cmultipart("alternative", [
+        cmultipart("mixed", [
+          cpart("text/plain", "a"),
+          cmultipart('alternative', [
+            cpart("text/plain", "b"),
+            cpart("text/html", "c"),
+          ]),
+        ]),
+      ]);
+
+    warn "S: " . $email->as_string . "\n";
 
     my $message = $mbox->add_message({
       email_type => 'provided',
@@ -40,6 +43,8 @@ test {
     ]]);
     ok($res->is_success, "Email/get")
       or diag explain $res->response_payload;
+
+    diag explain $res->as_stripped_triples;
 
     jcmp_deeply(
       $res->sentence_named("Email/get")->arguments->{list}[0]{bodyStructure},
